@@ -1,0 +1,265 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>재능 기부</title>
+</head>
+
+<style>
+   .waviy {
+position: relative;
+-webkit-box-reflect: below -20px linear-gradient(transparent, rgba(0,0,0,.2));
+font-size: 30px;
+width: 300px;
+height: 18px;
+padding: 20px 20px;
+text-align: center;
+}
+
+.waviy span {
+font-family: Impact;
+position: relative;
+display: inline-block;
+color: rgb(0, 0, 0);
+text-transform: uppercase;
+animation: waviy 1s infinite;
+animation-delay: calc(.1s * var(--i));
+}
+
+@keyframes waviy {
+0%,40%,100% {
+	transform: translateY(0)
+}
+20% {
+	transform: translateY(-20px)
+}}
+</style>
+
+<body>
+<div class="waviy">
+            <span style="--i:1">P</span>
+            <span style="--i:2">L</span>
+            <span style="--i:3">A</span>
+            <span style="--i:4">Y</span>
+            <span style="--i:5">D</span>
+            <span style="--i:6">A</span>
+            <span style="--i:7">T</span>
+            <span style="--i:8">A</span>
+           </div>
+<br><br><br>
+
+<h3>재능 기부의 모든 정보 검색하기</h3>
+<hr><p>
+
+
+<p>
+
+	<!-- 완성된 로직 : 보고 이해하기 -->
+	<!-- 동기  방식 -->
+	<!-- <a href="probono?command=probonoProjectAll"> -->
+	<!-- &nbsp;&nbsp;&nbsp;<a href="probono/probonoProjectAll">1. 진행중인 Probono Project 모두 검색</a><p> -->
+	
+	<!-- 비동기 방식 -->
+	&nbsp;&nbsp;&nbsp;<a href="#" onclick="allDataView()">1. 진행중인 Probono Project 모두 검색</a><p>
+	<P>
+	<div id = "ajaxView1">
+	</div>
+	<p>	
+	<script>
+	
+		function allDataView(){
+			
+			const xhttp = new XMLHttpRequest();
+			xhttp.onload = function() {
+				let data = this.responseText;
+				console.log(data);
+				console.log(typeof(data));
+				data = JSON.parse(data);
+				console.log(data[0]);
+				console.log(data[0].probonoProjectId);
+				
+				let tableElement =`
+				<table border="1">
+				<tr>   
+					<th>프로젝트 id</th><th>프로젝트명</th><th>재능기부자 id</th>
+					<th>재능 수혜자  id</th><th>재능기부 내용</th>
+				</tr>`;
+				
+				for (let i in data){
+					tableElement = tableElement + `<tr>
+				 		<td>${data[i].probonoProjectId}</td>
+				 		<td>${data[i].probonoProjectName}</td>
+				 	
+				 		<td><a href="probono/activist?activistId=${data[i].activistId}">
+				 			${data[i].activistId}
+				 		</a></td>
+				 		<td><a href="probono/recipient?recipientId=${data[i].receiveId}">${data[i].receiveId}</a></td>
+				 		<td>${data[i].projectContent}</td>
+				    </tr>`
+				}
+				
+				tableElement = tableElement + `</table>`;
+				document.getElementById("ajaxView1").innerHTML = tableElement;
+				
+				 /* <c:forEach items="${requestScope.probonoProjectAll}" var="data">
+					 <tr>
+					 	<td>${data.probonoProjectId}</td>
+					 	<td>${data.probonoProjectName}</td>
+					 	
+					 	<td><a href="${pageContext.request.contextPath}/probono/activist?activistId=${data.activistId}">
+					 		${data.activistId}
+					 	</a></td>
+					 	<td><a href="${pageContext.request.contextPath}/probono/recipient?recipientId=${data.receiveId}">${data.receiveId}</a></td>
+					 	<td>${data.projectContent}</td>
+					 </tr>
+				 </c:forEach> */
+			
+			};
+			xhttp.open( "GET", "rest/probonoProjectAll");
+			xhttp.send();
+		}
+		
+
+	</script>
+	
+	&nbsp;&nbsp;&nbsp;<a href="#" onclick="ajaxActivistView()">2. 재능 기부 프로젝트에 참여중인 기부자 모두 검색</a><p>	
+	<div id = "ajaxView2">
+	</div>
+	<div id = "ajaxView3">
+	</div>
+	<p>	
+	<script>
+	
+		function ajaxActivistView(){
+			
+			const xhttp = new XMLHttpRequest();
+			xhttp.onload = function() {
+				let data = this.responseText;
+				data = JSON.parse(data);
+				console.log(typeof(data));
+				console.log(data[0]);
+				
+				let tableElement =`
+				<table border="1">
+				<tr><th>activist_id</th><th>name</th><th>major</th></tr>`;
+				
+				for (let i in data){
+					tableElement = tableElement + `<tr>
+				 		<td><a href="#" onclick = "ajaxAjaxView('${data[i].id}')">${data[i].id}</a></td>
+				 		<td>${data[i].name}</td>
+				 		<td>${data[i].major}</td>
+				    </tr>`;
+				}
+				
+				tableElement = tableElement + `</table>`;
+				document.getElementById("ajaxView2").innerHTML = tableElement;
+			};
+			xhttp.open( "GET", "rest/activistAll");
+			xhttp.send();
+		}
+		
+	function ajaxAjaxView(v){
+			console.log(v);
+			const xhttp = new XMLHttpRequest();
+			
+			xhttp.onload = function() {
+				
+				let data = this.responseText;
+				data = JSON.parse(data);
+				console.log(data);
+				console.log(data[0])
+				
+				let tableElement =`
+					
+				<table border="1">
+				<tr><th>activist_id</th><th>name</th><th>major</th></tr>
+				<tr>
+				<td>${data.id}</td>
+		 		<td>${data.name}</td>
+		 		<td>${data.major}</td>
+		 		</tr>
+				</table>
+				<br>
+				<br>
+				<a href="http://localhost:8080/step11_refactoring/index.html">메인 화면 이동</a>`;
+	
+				document.getElementById("ajaxView2").innerHTML = tableElement;
+			};
+			xhttp.open( "GET", "rest/activist?id="+v);
+			xhttp.send();
+		}
+		
+	</script>
+	
+	<!-- 재능 기부자 가입하기 -->
+	&nbsp;&nbsp;&nbsp;<a href="activist/activistInsert.html">3. 재능 기부자 가입하기</a><p>
+
+
+	<!-- 재능 기부자 검색하기 -->
+	<form action="probono/activist" method="post" >
+		&nbsp;&nbsp;&nbsp;
+		4. 기부자 ID : <input type="text" name="activistId">
+		<input type="submit" value="검색">
+	</form>
+	<p>
+	
+	
+	
+	
+	&nbsp;&nbsp;&nbsp;<a href="probono/recipientAll">5. 재능 기부 프로젝트에 참여중인 수혜자 모두 검색</a><p>	
+	
+	&nbsp;&nbsp;&nbsp;<a href="recipient/recipientInsert.html">6. 재능 수혜자 가입하기</a><p>
+
+	<form action="probono/recipient" method="post" >
+		&nbsp;&nbsp;&nbsp;
+		7. 수혜자 ID : <input type="text" name="recipientId">
+		<input type="submit" value="검색">
+	</form>
+	<p>
+	<br><hr><br>
+	8. 프로보노 프로젝트 추가
+	<P>
+		
+		<!-- 	<form action="rest/probonoProjectInsert" method="POST" > -->
+		&nbsp;&nbsp;&nbsp;
+		probonoProjectName : <input type="text" name="probonoProjectName"  id="probonoProjectName" ><br> 
+		&nbsp;&nbsp;&nbsp;
+		probonoId: <input type="text" name="probonoId" id="probonoId" value="schweitzer" ><br>
+		&nbsp;&nbsp;&nbsp;
+		activistId: <input type="text" name="activistId" id="activistId"><br>
+		&nbsp;&nbsp;&nbsp;
+		receiveId: <input type="text" name="receiveId" id="receiveId" value="receivePeople3"><br>
+		&nbsp;&nbsp;&nbsp;
+		projectContent: <input type="text" name="projectContent" id="projectContent"><br>
+		<input type="button" value="Insert" onclick = "allDataView2()">
+		<!-- 	</form> -->
+	<p>
+	<hr>
+	
+	<script>
+	function allDataView2(){
+		
+		const xhttp = new XMLHttpRequest();
+		xhttp.onload = function() {
+			
+			let data = this.responseText;
+			alert(data);
+			if (data == 'true'){
+				allDataView();
+			}else{
+				alert("가입 실패!");
+			}
+			
+		};
+		query = "probonoProjectName=" + document.getElementById("probonoProjectName").value  
+				+ "&probonoId=" + document.getElementById("probonoId").value
+				+"&activistId=" + document.getElementById("activistId").value
+				+"&receiveId=" + document.getElementById("receiveId").value
+				+"&projectContent=" + document.getElementById("projectContent").value;
+		xhttp.open( "POST", "rest/probonoProjectInsert");
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhttp.send(query);
+		
+	}</script>
+</body>
+</html>
